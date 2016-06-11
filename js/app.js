@@ -1,5 +1,5 @@
 //1. Initialize global variables
-
+var total = 0;
 
 //2. When the page loads, give focus to the first text field
 $(function(){
@@ -53,43 +53,81 @@ Some events are at the same time as others. If the user selects a workshop, don'
 When a user unchecks an activity, make sure that competing activities (if there are any) are no longer disabled.*/
 $(":checkbox").change(function(){
     if ($("input[name='js-frameworks']").is(":checked")) {
-      $("#conflict").remove();
+      $("#express").remove();
       // could gray-out colour of workshop label
       $("input[name='express']").attr("disabled", true);
-      $("input[name='express']").parent().after("<p id='conflict' class='conflict'>This workshop conflicts with your current selection.</p>");
+      $("input[name='express']").parent().after("<p id='express' class='conflict'>This workshop conflicts with your current selection.</p>");
+      $("input[name='express']").parent().css('color','gray');
     } else {
-      $("#conflict").remove();
+      $("#express").remove();
       $("input[name='express']").attr("disabled", false);
+      $("input[name='express']").parent().css('color','#000');
     }
 
    if ($("input[name='express']").is(":checked")) {
       $("#js-frameworks").remove();
       $("input[name='js-frameworks']").attr("disabled", true);
       $("input[name='js-frameworks']").parent().after("<p id='js-frameworks' class='conflict'>This workshop conflicts with your current selection.</p>");
+      $("input[name='js-frameworks']").parent().css('color','gray');
     } else {
       $("#js-frameworks").remove();
       $("input[name='js-frameworks']").attr("disabled", false);
+      $("input[name='js-frameworks']").parent().css('color','#000');
     }
 
     if ($("input[name='js-libs']").is(":checked")) {
       $("#node").remove();
       $("input[name='node']").attr("disabled", true);
       $("input[name='node']").parent().after("<p id='node' class='conflict'>This workshop conflicts with your current selection.</p>");
+      $("input[name='node']").parent().css('color','gray');
     } else {
       $("#node").remove();
       $("input[name='node']").attr("disabled", false);
+      $("input[name='node']").parent().css('color','#000');
     }
 
     if ($("input[name='node']").is(":checked")) {
       $("#js-libs").remove();
       $("input[name='js-libs']").attr("disabled", true);
       $("input[name='js-libs']").parent().after("<p id='js-libs' class='conflict'>This workshop conflicts with your current selection.</p>");
+      $("input[name='js-libs']").parent().css('color','gray');
     } else {
       $("#js-libs").remove();
       $("input[name='js-libs']").attr("disabled", false);
+      $("input[name='js-libs']").parent().css('color','#000');
     }
 
 })
 
 /* 6. Cost of actvities
 As a user selects activities to register for, a running total is listed below the list of checkboxes. For example, if the user selects "Main conference" then Total: $200 should appear. If they add 1 workshop the total should change to Total: $300. */
+
+$(":checkbox").change(function(){
+    var total = 0;
+    $("#cost").remove();
+
+          if ($("input[name='all']").is(":checked"))  {
+            total += 200;
+          }
+
+          $(".activities input:not([name='all'])").each(function(){
+            if ($(this).is(":checked")) {
+            total += 100;
+            }
+          })
+
+    if (total > 0) {
+    $(".activities").append("<p id='cost'>Total cost: $" + total + " </p>")
+    }
+})
+
+/* Payment Info section
+Display payment sections based on chosen payment option */
+
+$("option[value='credit card']").prop("selected", true);
+
+$("#payment").change(function(){
+        $(this).val() === "credit card" ? $("#credit-card").show() : $("#credit-card").hide();
+        $(this).val() === "paypal" ? $("#paypal").show() : $("#paypal").hide();
+        $(this).val() === "bitcoin" ? $("#bitcoin").show() : $("#bitcoin").hide();
+});
