@@ -121,7 +121,7 @@ $(":checkbox").change(function(){
     }
 })
 
-/* Payment Info section
+/* 7. Payment Info section
 Display payment sections based on chosen payment option */
 
 $("option[value='credit card']").prop("selected", true);
@@ -131,3 +131,82 @@ $("#payment").change(function(){
         $(this).val() === "paypal" ? $("#paypal").show() : $("#paypal").hide();
         $(this).val() === "bitcoin" ? $("#bitcoin").show() : $("#bitcoin").hide();
 });
+
+
+/* 8. Form validation. Display error messages and don't let the user submit
+the form if any of these validation errors exist: */
+
+$("button[type='submit']").on("click", function(){
+
+  // 8.1 Name field can't be empty
+  if ($("#name").val() === "") {
+    $("button[type='submit']").attr("disabled", true);
+    $("#name").focus().attr("placeholder","Please enter your name");
+  }
+
+  // 8.2 At least one activity must be checked from the list under "Register for Actitivities."
+  if ($(".activities input").prop("checked", false)) {
+    $("button[type='submit']").attr("disabled", true);
+    // $(".activities").focus();
+    $(".activities legend").after("<p id='activityerror' class='errortext'>Please select an activity.</p>");
+    // $("#activityerror").focus();
+    // location.href = $("#activityerror")
+    // $("input[name='all]").focus();
+    // Need error message
+    // But also, focus doesn't work on class
+    // Do I need to remove activityerror?
+  }
+  });
+
+/* // 8.3 Payment option must be selected
+  $("#payment").change(function(){
+
+    $("#paymenterror").remove();
+
+    if ($("#payment").val() === "select_method") {
+      $("button[type='submit']").attr("disabled", true);
+      $("#payment").after("<p id='paymenterror'>Please select a payment method.</p>");
+    }
+  }); */
+
+  //Activites error doesn't register anymore; must set button back to submit enabled?
+
+
+
+$("button[type='submit']").on("click", function(){
+
+  // 8.3 Payment option must be selected
+  $("#paymenterror").remove();
+  if ($("#payment").val() === "select_method") {
+    $("button[type='submit']").attr("disabled", true);
+    $("#payment").after("<p id='paymenterror' class='errortext'>Please select a payment method.</p>");
+  }
+
+  // 8.4 Credit card details
+  /*If "Credit card" is the selected payment option, make sure the user supplied
+  a credit card number, a zip code, and a 3 number CVV value.*/
+    $("#paydetailserror").remove();
+    if ($("#payment").val() === "credit card" && $("#cc-num").val() === "" || $("#zip").val() === "" || $("#cvv").val() === "" ) {
+        $("button[type='submit']").attr("disabled", true);
+        $("#payment").after("<p id='paydetailserror' class='errortext'>Please complete your payment details.</p>");
+    }
+});
+//*If you change payment type after you give an error, error message should be removed
+// At one point, I saw bitcoin and paypal info show when they shouldn't have
+
+
+// 8.4 Email field must be a validly formatted e-mail address
+// Should I do this on keyup, or on submit?
+//***WHY DID THIS WORK WHEN I HIT THE ENTER KEY ON THE FIELD?
+$("button[type='submit']").on("click", function(){
+    $("#emailerror").remove();
+    var input = $("#mail").val();
+    var formula = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i
+
+    if(!formula.test(input)) {
+      $("button[type='submit']").attr("disabled", true);
+      $("#mail").after("<p id='emailerror' class='errortext'>Please enter a valid email.</p>");
+    }
+});
+
+// Where do I re-enable submit button?

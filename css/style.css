@@ -76,12 +76,6 @@ label {
 	margin-bottom: .5em;
 }
 
-.conflict {
-  margin-left: 1.75em;
-  margin-top: -1em;
-  color: gray;
-}
-
 input,
 select {
 	margin-bottom: 1.125em;
@@ -117,6 +111,18 @@ button {
 
 button:hover {
 	background: #184c62;
+}
+
+/* Two new classes added for validation errors */
+
+.conflict {
+  margin-left: 1.75em;
+  margin-top: -1em;
+  color: gray;
+}
+
+.errortext {
+  color: red;
 }
 
 /* =================================
