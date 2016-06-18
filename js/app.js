@@ -1,6 +1,8 @@
 //1. Initialize global variables
 var total;
 var activitycounter;
+var submitcounter;
+
 
 //2. When the page loads, give focus to the first text field
 $(function(){
@@ -111,11 +113,11 @@ $(":checkbox").change(function(){
 
 })
 
-/* 6. Cost of actvities
-As a user selects activities to register for, a running total is listed below the list of checkboxes. For example, if the user selects "Main conference" then Total: $200 should appear. If they add 1 workshop the total should change to Total: $300. */
-
+// 6. Cost of activities
+// As a user selects activities to register for, a running total is listed below the list of checkboxes.
 $(":checkbox").change(function(){
-    enableButton();
+
+    // Clear any existing error message saying no activities were checked
     $("#activityerror").remove();
 
     var total = 0;
@@ -140,8 +142,6 @@ $(":checkbox").change(function(){
 
 // First, make credit card the default option,
 // This can be done just by removing the "Select Payment Method" option
-// and hide the "Select method" option, because we don't need it anymore
-//$("option[value='credit card']").prop("selected", true);
 $("option[value='select_method']").remove();
 // Then, hide payment information for the other two options
 $("#paypal").hide();
@@ -158,10 +158,14 @@ $("#payment").change(function(){
 /* 8. Form validation. Display error messages and don't let the user submit
 the form if any of these validation errors exist: */
 
-$("button[type='submit']").on("click", function(){
+$("button[type='submit']").on("click", function(e){
     // First, clear any existing error messages
     //$("#activityerror").remove();
+    $("#nameerror").remove();
     $("#paydetailserror").remove();
+    $("#ccserror").remove();
+    $("#mailerror").remove();
+
     // Next, use variables to track problems with input;
     // these will tell us at end of function whether form can be sumbitted
     var submitcounter = 0;
@@ -173,8 +177,8 @@ $("button[type='submit']").on("click", function(){
     // 8.1 Name field can't be empty
     if ($("#name").val() === "") {
       submitcounter += 1;
-      $("#name").focus().attr("placeholder","Please enter your name");
-      $("#name").addClass("errortext");
+    //  $("#name").focus().attr("placeholder","Please enter your name");
+      $("#name").before("<p id='nameerror' class='errortext'>Please enter your name.</p>");
     }
 
     // 8.2 At least one activity must be checked from the list under "Register for Actitivities."
@@ -193,15 +197,7 @@ $("button[type='submit']").on("click", function(){
       }
 
 
-
-    // 8.3 Payment option must be selected
-    // This can be done just by removing the "Select Payment Method" option
-    // (which makes sense anyway, since Credit Card must be the default)
-    $("option[value='select_method']").remove();
-
-
-
-    // 8.4 Credit card details
+    // 8.3 Credit card details
     /*If "Credit card" is the selected payment option, make sure the user supplied
     a credit card number, a zip code, and a 3 number CVV value.*/
       if ($("#payment").val() == "credit card" && ($("#cc-num").val() == "" || $("#zip").val() == "" || $("#cvv").val() === "") ) {
@@ -212,85 +208,40 @@ $("button[type='submit']").on("click", function(){
 
 
     // 8.4 Email field must be a validly formatted e-mail address
-    //***WHY DID THIS WORK WHEN I HIT THE ENTER KEY ON THE FIELD?
       var emailinput = $("#mail").val();
-      var emailformula = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i
+      var emailformula = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
 
       if (!emailformula.test(emailinput)) {
         submitcounter += 1;
-        $("#mail").attr("placeholder","Please enter a valid email");
-        $("#mail").addClass("errortext");
-        //$("#mail").after("<p id='emailerror' class='errortext'>Please enter a valid email.</p>");
+        $("#mail").before("<p id='mailerror' class='errortext'>Please enter a valid email.</p>");
       }
 
-    // 8.5 Credit card number must be valid
-    if ($("option[value='credit card']").is(":selected")){
-       creditCardCheck();
-       console.log("Credit card number check started")
-    }
+  // 8.5 Credit card number must be valid
+    // use jQuery plugin
+    $("#cc-num").validateCreditCard(function(result){
+        console.log(result.valid);
+        if ((result.valid == false) && ($("#cc-num").val() !== "")) {
+          submitcounter += 1;
+          $("#payment").after("<p id='ccserror' class='errortext'>Please enter a valid card number.</p>");
+        } else {
+          console.log("This is a valid credit card number")
+        }
+    });
 
-
+  // Finally, check whether form can be submitted
   if (submitcounter > 0) {
-    $("button[type='submit']").attr("disabled", true);
+    e.preventDefault();
+    console.log("Submit prevented");
+    console.log(submitcounter);
   } else {
-    $("button[type='submit']").after("<p>Your registration details were accepted.</p>");
+    console.log("Registration accepted");
+    // If I don't put in an alert, the page refreshes instantly, which I
+    // think is confusing for the user
+    alert("Registration accepted");
   }
 
-} );
+});
 
 
-function enableButton(){
-  $("button[type='submit']").attr("disabled", false);
-}
-
-
-function creditCardCheck(){
-  var ccinput = $("#cc-num").val();
-  console.log(ccinput);
-  // Luhn Formula:
-  // Drop the last digit from the number. The last digit is what we want to check against
-  ccinput = ccinput.slice(0, -1);
-  console.log(ccinput);
-  // Reverse the numbers
-  var reverseccinput = ccinput.split("").reverse().join("");
-  console.log(reverseccinput);
-  // Multiply the digits in odd positions (1, 3, 5, etc.) by 2 and subtract 9 to all any result higher than 9
-  var newstring = "";
-  for (var i=0; i<=reverseccinput.length; i++) {
-    var digit = parseInt(reverseccinput.charAt(i), 10);
-    if (i % 2 == 0) {
-    digit *= 2;
-    }
-    if (digit > 9){
-    digit -= 9;
-    }
-    newstring = newstring + digit;
-  }
-  console.log(newstring);
-
-  // Add all the numbers together
-  var stringsum = 0;
-  for (j = 0; j < newstring.length; j++) {
-    var singledigit = parseInt(newstring.charAt(j), 10);
-    stringsum = stringsum + singledigit;
-  }
-  console.log(stringsum);
-  // The check digit (the last number of the card) is the amount that you would need to add to get a multiple of 10 (Modulo 10)
-  var checkdigit = $("#cc-num").val().slice(-1);
-  var digittotal = stringsum + checkdigit;
-
-  if ((digittotal != 0) && (digittotal % 10 == 0)) {
-     console.log("This is a valid credit card number")
-  } else {
-    submitcounter += 1;
-    $("#cc-num").attr("placeholder","Please enter a valid number");
-  }
-}
-
-// IF SUBMIT BUTTON WORKS, THE FORM CLEARS; SHOULD I CHANGE THAT?
-
-// HITTING ENTER ON ANY INPUT SUBMITS FORM - I SHOULD PROBABLY DISABLE THIS, BUT HOW?
 
 // WHY DO FIELDS SOMETIMES HAVE A YELLOW BACKGROUND - IS THAT THE BROWSER DEFAULT?
-
-// HOW DO I JUMP TO PART OF PAGE WHERE THE ERROR IS?
