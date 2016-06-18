@@ -167,7 +167,7 @@ $("button[type='submit']").on("click", function(){
     var submitcounter = 0;
     var activitycounter = 0;
     // Then, make sure button is enabled, in case it has previously been disabled
-    $("button[type='submit']").attr("disabled", false);
+    //$("button[type='submit']").attr("disabled", false);
 
 
     // 8.1 Name field can't be empty
@@ -178,18 +178,6 @@ $("button[type='submit']").on("click", function(){
     }
 
     // 8.2 At least one activity must be checked from the list under "Register for Actitivities."
-      /*$(".activities input").each(function(){
-        if ($(this).prop("checked", false)) {
-          console.log("This isn't checked.")
-          activitycounter += 1;
-        }
-        return activitycounter;
-      })
-
-      if ($(".activities input").length === activitycounter){
-        submitcounter += 1;
-        $(".activities").after("<p id='activityerror' class='errortext'>Please select an activity.</p>");
-      }*/
 
       $(".activities input").each(function(){
         if ($(this).is(":checked")) {
@@ -197,7 +185,7 @@ $("button[type='submit']").on("click", function(){
           activitycounter += 1;
         }
         return activitycounter;
-      })
+      });
 
       if (activitycounter == 0){
         submitcounter += 1;
@@ -236,26 +224,73 @@ $("button[type='submit']").on("click", function(){
       }
 
     // 8.5 Credit card number must be valid
-    /* if ($("option[value='credit card']").is(":selected")){
-        var ccinput = $("#cc-num").val();
-        var ccformula =
-    } */
+    if ($("option[value='credit card']").is(":selected")){
+       creditCardCheck();
+       console.log("Credit card number check started")
+    }
 
 
   if (submitcounter > 0) {
-  $("button[type='submit']").attr("disabled", true);
+    $("button[type='submit']").attr("disabled", true);
+  } else {
+    $("button[type='submit']").after("<p>Your registration details were accepted.</p>");
   }
 
-});
+} );
 
 
 function enableButton(){
   $("button[type='submit']").attr("disabled", false);
 }
 
-// IF SUBMIT BUTTON WORKS, FORM CLEARS; IS THAT THE RIGHT THING TO DO?
 
-// HITTING ENTER ON ANY INPUT SUBMITS FORM - MUST DISABLE THIS
-// At one point, I saw bitcoin and paypal info show when they shouldn't have
+function creditCardCheck(){
+  var ccinput = $("#cc-num").val();
+  console.log(ccinput);
+  // Luhn Formula:
+  // Drop the last digit from the number. The last digit is what we want to check against
+  ccinput = ccinput.slice(0, -1);
+  console.log(ccinput);
+  // Reverse the numbers
+  var reverseccinput = ccinput.split("").reverse().join("");
+  console.log(reverseccinput);
+  // Multiply the digits in odd positions (1, 3, 5, etc.) by 2 and subtract 9 to all any result higher than 9
+  var newstring = "";
+  for (var i=0; i<=reverseccinput.length; i++) {
+    var digit = parseInt(reverseccinput.charAt(i), 10);
+    if (i % 2 == 0) {
+    digit *= 2;
+    }
+    if (digit > 9){
+    digit -= 9;
+    }
+    newstring = newstring + digit;
+  }
+  console.log(newstring);
 
-// How do I jump to part of page where error is?
+  // Add all the numbers together
+  var stringsum = 0;
+  for (j = 0; j < newstring.length; j++) {
+    var singledigit = parseInt(newstring.charAt(j), 10);
+    stringsum = stringsum + singledigit;
+  }
+  console.log(stringsum);
+  // The check digit (the last number of the card) is the amount that you would need to add to get a multiple of 10 (Modulo 10)
+  var checkdigit = $("#cc-num").val().slice(-1);
+  var digittotal = stringsum + checkdigit;
+
+  if ((digittotal != 0) && (digittotal % 10 == 0)) {
+     console.log("This is a valid credit card number")
+  } else {
+    submitcounter += 1;
+    $("#cc-num").attr("placeholder","Please enter a valid number");
+  }
+}
+
+// IF SUBMIT BUTTON WORKS, THE FORM CLEARS; SHOULD I CHANGE THAT?
+
+// HITTING ENTER ON ANY INPUT SUBMITS FORM - I SHOULD PROBABLY DISABLE THIS, BUT HOW?
+
+// WHY DO FIELDS SOMETIMES HAVE A YELLOW BACKGROUND - IS THAT THE BROWSER DEFAULT?
+
+// HOW DO I JUMP TO PART OF PAGE WHERE THE ERROR IS?
