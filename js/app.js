@@ -208,10 +208,14 @@ $("button[type='submit']").on("click", function(e){
     // 8.6 Credit card number must be valid
       // use jQuery plugin
       $("#cc-num").validateCreditCard(function(result){
+          $("#ccerror").remove();
           console.log(result.valid);
           if ((result.valid === false) && ($("#cc-num").val() !== "")) {
             submitcounter += 1;
-            $("#payment").after("<p id='ccserror' class='errortext'>Please enter a valid card number.</p>");
+            $("#payment").after("<p id='ccerror' class='errortext'>Please enter a valid card number.</p>");
+            // Clear payment details error, so there aren't two error messages at a time
+            // under the payment section
+            $("#paydetailserror").remove();
           } else {
             console.log("This is a valid credit card number");
           }
