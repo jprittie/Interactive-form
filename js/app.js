@@ -1,22 +1,21 @@
-//1. Initialize global variables
-var total;
+// 1. Initialize global variables
+// var total;
 var activitycounter;
 var submitcounter;
 
 
-//2. When the page loads, give focus to the first text field
+// 2. When the page loads, give focus to the first text field
 $(function(){
   $("#name").focus();
 });
 
-// 3. Job Role section:
 
+// 3. Job Role section:
 // First, hide "Other" input field if Javascript is enabled
 $("#other-title").hide();
 $("#title-label").hide();
 
-// If JS enabled and "Other" option selected, add text input field with id "other-title"
-// and placeholder text "Your Title"
+// If JS enabled and "Other" option selected, add job title input field & placeholder text
 $("#title").change(function(){
     if ($("#title").val() == "other") {
       $("#other-title").show();
@@ -39,32 +38,34 @@ $("#title").change(function(){
         $("#color").append($("<option>Please select a T-shirt theme</option>"));
     }*/
 
-// 4.2 EE: Hide "Color" label and select menu until a T-Shirt design is selected
-$("#colors-js-puns").hide();
+    // 4.2 EE: Hide "Color" label and select menu until a T-Shirt design is selected
+    $("#colors-js-puns").hide();
 
-$("#design").change(function(){
-    // First, clear current colour dropdown
-    $("#color").children().remove();
-    // Then show colours based on design selected
-    if ($("#design").val() == "js puns") {
-        $("#color").append($("<option value='cornflowerblue'>Cornflower Blue</option>"));
-        $("#color").append($("<option value='darkslategrey'>Dark Slate Grey</option>"));
-        $("#color").append($("<option value='gold'>Gold</option>"));
-        $("#colors-js-puns").show();
-    } else if ($("#design").val() == "heart js") {
-        $("#color").append($("<option value='tomato'>Tomato</option>"));
-        $("#color").append($("<option value='steelblue'>Blue Steel</option>"));
-        $("#color").append($("<option value='dimgrey'>Dim Grey</option>"));
-        $("#colors-js-puns").show();
-    } else {
-        $("#colors-js-puns").hide();
-    }
-})
+    $("#design").change(function(){
+        // First, clear current colour dropdown
+        $("#color").children().remove();
+        // Then, show colours based on design selected
+        if ($("#design").val() == "js puns") {
+            $("#color").append($("<option value='cornflowerblue'>Cornflower Blue</option>"));
+            $("#color").append($("<option value='darkslategrey'>Dark Slate Grey</option>"));
+            $("#color").append($("<option value='gold'>Gold</option>"));
+            $("#colors-js-puns").show();
+        } else if ($("#design").val() == "heart js") {
+            $("#color").append($("<option value='tomato'>Tomato</option>"));
+            $("#color").append($("<option value='steelblue'>Blue Steel</option>"));
+            $("#color").append($("<option value='dimgrey'>Dim Grey</option>"));
+            $("#colors-js-puns").show();
+        } else {
+            $("#colors-js-puns").hide();
+        }
+    });
+
 
 /* 5. Register for Activities section
 Don't allow selection of two workshops at the same date and time.
 Disable checkbox and indicate that workshop in competing time slot isn't available.
 When workshop is unchecked, any competing activites are enabled again */
+
 $(":checkbox").change(function(){
 
   // First, clear any existing messages about workshop conflicts
@@ -72,6 +73,9 @@ $(":checkbox").change(function(){
   $("#js-frameworks").remove();
   $("#node").remove();
   $("#js-libs").remove();
+  // And clear any existing error message saying that no activities were checked
+  $("#activityerror").remove();
+
 
   // Next, prevent schedule conflicts and add messages
     if ($("input[name='js-frameworks']").is(":checked")) {
@@ -111,14 +115,12 @@ $(":checkbox").change(function(){
       $("input[name='js-libs']").parent().css('color','#000');
     }
 
-})
+});
 
 // 6. Cost of activities
 // As a user selects activities to register for, a running total is listed below the list of checkboxes.
-$(":checkbox").change(function(){
 
-    // Clear any existing error message saying no activities were checked
-    $("#activityerror").remove();
+$(":checkbox").change(function(){
 
     var total = 0;
     $("#cost").remove();
@@ -131,12 +133,12 @@ $(":checkbox").change(function(){
             if ($(this).is(":checked")) {
             total += 100;
             }
-          })
+          });
 
     if (total > 0) {
-    $(".activities").append("<p id='cost'>Total cost: $" + total + " </p>")
+    $(".activities").append("<p id='cost'>Total cost: $" + total + " </p>");
     }
-})
+});
 
 // 7. Payment Info section
 
@@ -160,7 +162,6 @@ the form if any of these validation errors exist: */
 
 $("button[type='submit']").on("click", function(e){
     // First, clear any existing error messages
-    //$("#activityerror").remove();
     $("#nameerror").remove();
     $("#paydetailserror").remove();
     $("#ccserror").remove();
@@ -168,40 +169,38 @@ $("button[type='submit']").on("click", function(e){
 
     // Next, use variables to track problems with input;
     // these will tell us at end of function whether form can be sumbitted
-    var submitcounter = 0;
-    var activitycounter = 0;
-    // Then, make sure button is enabled, in case it has previously been disabled
-    //$("button[type='submit']").attr("disabled", false);
+     submitcounter = 0;
+     activitycounter = 0;
+
 
 
     // 8.1 Name field can't be empty
     if ($("#name").val() === "") {
       submitcounter += 1;
-    //  $("#name").focus().attr("placeholder","Please enter your name");
       $("#name").before("<p id='nameerror' class='errortext'>Please enter your name.</p>");
+      $("#name").focus();
     }
 
     // 8.2 At least one activity must be checked from the list under "Register for Actitivities."
 
       $(".activities input").each(function(){
         if ($(this).is(":checked")) {
-          console.log("This is checked.")
           activitycounter += 1;
         }
         return activitycounter;
       });
 
-      if (activitycounter == 0){
+      if (activitycounter === 0){
         submitcounter += 1;
         $(".activities").after("<p id='activityerror' class='errortext'>Please select an activity.</p>");
       }
 
 
     // 8.3 Credit card details
-    /*If "Credit card" is the selected payment option, make sure the user supplied
-    a credit card number, a zip code, and a 3 number CVV value.*/
-      if ($("#payment").val() == "credit card" && ($("#cc-num").val() == "" || $("#zip").val() == "" || $("#cvv").val() === "") ) {
-          console.log("Credit card fields are blank.")
+    /* If "Credit card" is the selected payment option, make sure the user supplied
+    a credit card number, a zip code, and a 3 number CVV value. */
+      if ($("#payment").val() == "credit card" && ($("#cc-num").val() === "" || $("#zip").val() === "" || $("#cvv").val() === "") ) {
+          console.log("Credit card fields are blank.");
           submitcounter += 1;
           $("#payment").after("<p id='paydetailserror' class='errortext'>Please complete your payment details.</p>");
       }
@@ -209,26 +208,26 @@ $("button[type='submit']").on("click", function(e){
 
     // 8.4 Email field must be a validly formatted e-mail address
       var emailinput = $("#mail").val();
-      var emailformula = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
+      var emailformula = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
 
       if (!emailformula.test(emailinput)) {
         submitcounter += 1;
         $("#mail").before("<p id='mailerror' class='errortext'>Please enter a valid email.</p>");
       }
 
-  // 8.5 Credit card number must be valid
-    // use jQuery plugin
-    $("#cc-num").validateCreditCard(function(result){
-        console.log(result.valid);
-        if ((result.valid == false) && ($("#cc-num").val() !== "")) {
-          submitcounter += 1;
-          $("#payment").after("<p id='ccserror' class='errortext'>Please enter a valid card number.</p>");
-        } else {
-          console.log("This is a valid credit card number")
-        }
-    });
+    // 8.5 Credit card number must be valid
+      // use jQuery plugin
+      $("#cc-num").validateCreditCard(function(result){
+          console.log(result.valid);
+          if ((result.valid === false) && ($("#cc-num").val() !== "")) {
+            submitcounter += 1;
+            $("#payment").after("<p id='ccserror' class='errortext'>Please enter a valid card number.</p>");
+          } else {
+            console.log("This is a valid credit card number");
+          }
+      });
 
-  // Finally, check whether form can be submitted
+  // 8.6 Finally, check whether form can be submitted
   if (submitcounter > 0) {
     e.preventDefault();
     console.log("Submit prevented");
@@ -241,7 +240,3 @@ $("button[type='submit']").on("click", function(e){
   }
 
 });
-
-
-
-// WHY DO FIELDS SOMETIMES HAVE A YELLOW BACKGROUND - IS THAT THE BROWSER DEFAULT?
