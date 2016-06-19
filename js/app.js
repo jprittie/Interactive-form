@@ -144,6 +144,8 @@ the form if any of these validation errors exist: */
 $("button[type='submit']").on("click", function(e){
     // First, clear any existing error messages
     $("#nameerror").remove();
+    $("#titleerror").remove();
+    $("#activityerror").remove();
     $("#paydetailserror").remove();
     $("#ccserror").remove();
     $("#mailerror").remove();
@@ -162,7 +164,13 @@ $("button[type='submit']").on("click", function(e){
       $("#name").focus();
     }
 
-    // 8.2 At least one activity must be checked from the list under "Register for Actitivities."
+    // 8.2 If Other field is selected, ensure job title is entered
+    if ( ($("#title").val() == "other") && ($("#other-title").val() === "") ) {
+      submitcounter += 1;
+      $("#other-title").after("<p id='titleerror' class='errortext'>Please enter your job role.</p>");
+    }
+
+    // 8.3 At least one activity must be checked from the list under "Register for Actitivities."
 
       $(".activities input").each(function(){
         if ($(this).is(":checked")) {
@@ -177,7 +185,7 @@ $("button[type='submit']").on("click", function(e){
       }
 
 
-    // 8.3 Credit card details
+    // 8.4 Credit card details
     /* If "Credit card" is the selected payment option, make sure the user supplied
     a credit card number, a zip code, and a 3 number CVV value. */
       if ($("#payment").val() == "credit card" && ($("#cc-num").val() === "" || $("#zip").val() === "" || $("#cvv").val() === "") ) {
@@ -187,7 +195,7 @@ $("button[type='submit']").on("click", function(e){
       }
 
 
-    // 8.4 Email field must be a validly formatted e-mail address
+    // 8.5 Email field must be a validly formatted e-mail address
       var emailinput = $("#mail").val();
       //var emailformula = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
       var emailformula = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -197,7 +205,7 @@ $("button[type='submit']").on("click", function(e){
         $("#mail").before("<p id='mailerror' class='errortext'>Please enter a valid email.</p>");
       }
 
-    // 8.5 Credit card number must be valid
+    // 8.6 Credit card number must be valid
       // use jQuery plugin
       $("#cc-num").validateCreditCard(function(result){
           console.log(result.valid);
@@ -209,7 +217,7 @@ $("button[type='submit']").on("click", function(e){
           }
       });
 
-  // 8.6 Finally, check whether form can be submitted
+  // 8.7 Finally, check whether form can be submitted
   if (submitcounter > 0) {
     e.preventDefault();
     console.log("Submit prevented");
