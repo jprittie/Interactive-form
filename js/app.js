@@ -1,5 +1,4 @@
 // 1. Initialize global variables
-// var total;
 var activitycounter;
 var submitcounter;
 
@@ -69,51 +68,33 @@ When workshop is unchecked, any competing activites are enabled again */
 $(":checkbox").change(function(){
 
   // First, clear any existing messages about workshop conflicts
-  $("#express").remove();
-  $("#js-frameworks").remove();
-  $("#node").remove();
-  $("#js-libs").remove();
+  $(".conflict").remove();
   // And clear any existing error message saying that no activities were checked
   $("#activityerror").remove();
 
 
   // Next, prevent schedule conflicts and add messages
-    if ($("input[name='js-frameworks']").is(":checked")) {
-      $("input[name='express']").attr("disabled", true);
-      $("input[name='express']").parent().after("<p id='express' class='conflict'>This workshop conflicts with your current selection.</p>");
-      // Gray out colour of workshop label
-      $("input[name='express']").parent().css('color','gray');
-    } else {
-      $("input[name='express']").attr("disabled", false);
-      $("input[name='express']").parent().css('color','#000');
+  var frameworks = $("input[name='js-frameworks']");
+  var express = $("input[name='express']");
+  var libraries = $("input[name='js-libs']");
+  var node = $("input[name='node']");
+
+    function timeConflict(workshop, conflict){
+      if (workshop.is(":checked")) {
+        conflict.attr("disabled", true);
+        conflict.parent().after("<p class='conflict'>This workshop conflicts with your current selection.</p>");
+        // Gray out colour of workshop label
+        conflict.parent().css('color','gray');
+      } else {
+        conflict.attr("disabled", false);
+        conflict.parent().css('color','#000');
+      }
     }
 
-   if ($("input[name='express']").is(":checked")) {
-      $("input[name='js-frameworks']").attr("disabled", true);
-      $("input[name='js-frameworks']").parent().after("<p id='js-frameworks' class='conflict'>This workshop conflicts with your current selection.</p>");
-      $("input[name='js-frameworks']").parent().css('color','gray');
-    } else {
-      $("input[name='js-frameworks']").attr("disabled", false);
-      $("input[name='js-frameworks']").parent().css('color','#000');
-    }
-
-    if ($("input[name='js-libs']").is(":checked")) {
-      $("input[name='node']").attr("disabled", true);
-      $("input[name='node']").parent().after("<p id='node' class='conflict'>This workshop conflicts with your current selection.</p>");
-      $("input[name='node']").parent().css('color','gray');
-    } else {
-      $("input[name='node']").attr("disabled", false);
-      $("input[name='node']").parent().css('color','#000');
-    }
-
-    if ($("input[name='node']").is(":checked")) {
-      $("input[name='js-libs']").attr("disabled", true);
-      $("input[name='js-libs']").parent().after("<p id='js-libs' class='conflict'>This workshop conflicts with your current selection.</p>");
-      $("input[name='js-libs']").parent().css('color','gray');
-    } else {
-      $("input[name='js-libs']").attr("disabled", false);
-      $("input[name='js-libs']").parent().css('color','#000');
-    }
+  timeConflict(frameworks, express);
+  timeConflict(express, frameworks);
+  timeConflict(libraries, node);
+  timeConflict(node, libraries);
 
 });
 
@@ -208,7 +189,8 @@ $("button[type='submit']").on("click", function(e){
 
     // 8.4 Email field must be a validly formatted e-mail address
       var emailinput = $("#mail").val();
-      var emailformula = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+      //var emailformula = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+      var emailformula = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
       if (!emailformula.test(emailinput)) {
         submitcounter += 1;
