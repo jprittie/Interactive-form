@@ -131,6 +131,9 @@ $("#paypal").hide();
 $("#bitcoin").hide();
 // Next, display payment sections based on chosen payment option
 $("#payment").change(function(){
+    // First, clear any existing error messages
+    $("#ccerror").remove();
+    $("#paydetailserror").remove();
     $(this).val() === "credit card" ? $("#credit-card").show() : $("#credit-card").hide();
     $(this).val() === "paypal" ? $("#paypal").show() : $("#paypal").hide();
     $(this).val() === "bitcoin" ? $("#bitcoin").show() : $("#bitcoin").hide();
