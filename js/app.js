@@ -1,4 +1,4 @@
-// 1. Initialize global variables
+// 1. Instantiate global variables
 var activitycounter;
 var submitcounter;
 
@@ -27,7 +27,7 @@ $("#title").change(function(){
 // 4. T-Shirt Info section
 // Only display colours that match the selected design
 
-    // 4.1 NOT NEEDED ON ACCOUNT OF EE
+    // 4.1 NOT NEEDED ON ACCOUNT OF EXCEEDS EXPECTATIONS OBJECTIVES
     // If no design selected, colour options don't appear,
     // and colour menu reads “Please select a T-shirt theme”
 
