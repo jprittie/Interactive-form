@@ -1,9 +1,9 @@
-##Interactive form with validation
+## Interactive form with validation
 *Project 3 of Treehouse Full Stack JavaScript course*
 
 You can [view the project here.](http://jprittie.github.io/Interactive-form-with-validation/)
 
-###Project objectives
+### Project objectives
 Add interactivity and validation to a conference registration form. Validation includes checking the format of email addresses and credit card numbers. Specific objectives include:
 
 * Adding focus to the first text field when the page loads.
@@ -12,7 +12,7 @@ Add interactivity and validation to a conference registration form. Validation i
 * Creating a running total cost of the activities a user has selected.
 * Display relevant payment sections when a payment option is chosen.
 
-####Form validation
+#### Form validation
 Display error messages and don't let the user submit the form if any of these validation errors exist:
 * Name field can't be empty.
 * Email field must be a validly formatted e-mail address.
